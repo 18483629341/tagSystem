@@ -1,0 +1,124 @@
+   main.js文件
+     import Vue from 'vue'
+
+     import VueRouter from 'vue-router'
+
+	import routes from "./router.config"
+
+	import axios from 'axios'
+
+	import VueLazyload from 'vue-lazyload'
+
+	import App from './App'
+
+	//import router from './router'
+
+	...css
+	Vue.use(VueRouter);
+	const router=new VueRouter({
+  routes
+});
+
+	Vue.use(
+	    VueLazyload,
+	{
+  perLoad:1.3,
+  error:require('./assets/images/err.png'),
+  loading:require('./assets/images/loading.gif'),
+  attempt:3,
+  listenEvents:['scroll']
+})
+
+
+	Vue.config.productionTip = false
+
+	axios.defaults.baseURL='http://localhost:3333/';//192.168.0.104
+
+	axios.defaults.headers['Content-Type']='application/x-www-form-urlencoded'
+
+	Vue.prototype.$http=axios;
+/* eslint-disable no-new */
+
+	new Vue({
+  el: '#app',
+  router,
+  //components: { App },
+  //template: '<App/>',
+  render:h=>h(App)  //2.0写法
+})
+在css的文件中引入，会出现很多报错，css-loader,事实上css-loader已经引入  
+	.icon{
+   	 	background-image: url('./images/sprites.png');
+	}
+  坑 0 在移动端访问
+         修改package.json中  引入
+	"scripts": {
+    "dev": "webpack-dev-server --inline --progress --config build/webpack.dev.conf.js --open --hot --host 0.0.0.0",
+         然后用电脑的IP的地址 ：如http://192.168.100.159:8080访问，没有出来
+          需要重启服务器，npm run dev ,再刷新一下页面
+   坑 1.  store的引用 只在入口js中 import 后，
+           需要在组建中引用$store 
+    坑 2.vue对象中的对象直接赋值，是不会被obeserve；
+           需要用this.$set(a,'name',lisa)才会被obeserve；
+    坑3 路由参数           this.$router.params.id  拿不到
+             router的 实例 this.$route.params.id   才能拿到
+              this.$route.params.id 
+     坑4  在catgory页面  中左边的列表虽然变化，引起路由变化，但是不能组件一直都没有变化
+              那么右边组件 如何通过路由的变化发起请求呢？
+                                        watch:{$route(to){//监听不建议大量使用
+			console.log(to)
+	                        }} 
+      坑5 懒加载出现问题：
+	1.入口文件没有引入vuelazyload
+                2.在点击catgory页面中的内容，点击不同的lrouter-link引起页面内改变，需要在link上面
+           加key属性
+     坑6 将vue的对象的数据copy    cartData=this.goodsData[0];   xxx 
+               应该要使用  深拷贝    cartData=JSON.parse(JSON.stringfy(object))  ;
+                                              cartData=JSON.parse(JSON.stringfy(this.goodsData[0]));
+    坑7  import {mapGetters,mapActions} from 'vuex'
+          computed:mapGetters(['cartDatas']) //返回有关于 一个名为cartDatas的值
+          data中不要再定义cartDatas
+          ...mapActions(['goodIncrement','goodDecrement']) //遍历数组中的房返回到methods中
+   得1  filter（）
+        删除与Id 匹配的data的对象
+          	var newData=state.addCartDatas.filter(function(item){
+			return item.product_id!==id
+		});
+		state.addCartDatas=newData;
+     
+    得2 reduce()计算数组元素相加后的总和
+               //累加器  money计算返回值   item当前元素  0传递给函数的初始值
+	return state.addCartDatas.reduce(function(sum,item){
+			return  sum+item.product_uprice*item.goods_num
+		},0)
+    坑8  所有在前后台交互都会遇到的问题
+            前台传后台的是对象，到后台就编程  字符串JSON.stringify(obj)
+           后台穿前台的是字符串，需要 用JSON.parse(string)
+      
+    得9： 用vue打包apk
+                npm run build 生成dist 文件，里面生成静态文件；
+                测试打包文件是否正常，开启一个服务  npm install -g serve  全局安装
+                 serve dist
+                http://localhost:5000/#/home
+      坑10： 发现页面的路由中带有#，如何解决
+                 #表示路由中的      hash模式
+                 如何去掉#  
+                 1.将router中的mode 设置为“history‘’
+                 const router=new VueRouter({
+  mode:"history",
+  routes:routes
+});
+                  2.将config/index.js中的build属性设置为“/’
+                 3然后配置nignx
+	server {
+ 	   listen 0.0.0.0:12345;
+   		 location / {
+       		 root /home/我的应用跟目录;
+        		try_files $uri $uri/ /index.html =404;  // 这个是重点
+                       }
+   		 error_page 404 /index.html
+	}
+
+
+      
+    

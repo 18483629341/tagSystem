@@ -1,0 +1,18 @@
+.fixBottomBox{
+
+	position:fixed;
+	bottom:-1px;
+	width:100%;
+	background:#fff;
+}
+.tabItem{
+	width:18.5%;
+	display:inline-block;
+}
+.tab-item-link{
+ 
+}
+.tab-item-link img{
+	width:100%;
+	height:auto
+}
