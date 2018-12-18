@@ -117,5 +117,6 @@
 </script>
 
 <style >
-   	@import '../assets/css/navBottom.css'
+	/*@import '../assets/css/navBottom.css'*/
+   	@import '../assets/css/navTop.css'
 </style>

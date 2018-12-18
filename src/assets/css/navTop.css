@@ -1,7 +1,7 @@
 .fixBottomBox{
 
 	position:fixed;
-	bottom:-1px;
+	top:-1px;
 	width:100%;
 	background:#fff;
 }

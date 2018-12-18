@@ -1,12 +1,15 @@
 <template>
   <div id="app">
+  <NavTop />
     <router-view/>
-    <NavBottom  v-if="$store.state.isShowNav"/>
+
+    <!--<NavBottom  v-if="$store.state.isShowNav"/>-->
   </div>
 </template>
 
 <script>
-import NavBottom from './components/NavBottom';
+import NavTop from './components/NavTop';
+//import NavBottom from './components/NavBottom';
 export default {
   name: 'App',
   data(){
@@ -15,7 +18,8 @@ export default {
     }
   },
   components:{
-    NavBottom
+   // NavBottom,
+    NavTop
   }
 }
 </script>
